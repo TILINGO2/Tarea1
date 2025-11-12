@@ -1,0 +1,144 @@
+Cliente Síncrono para API de Usuarios
+ Descripción General
+
+Este proyecto implementa un sistema cliente-servidor síncrono en Python.
+Consta de dos componentes principales:
+
+Servidor (server.py): una API REST desarrollada con Flask que gestiona usuarios (creación y consulta).
+
+Cliente (client_to_complete.py): un programa que consume la API de manera síncrona, demostrando cómo las llamadas bloquean la ejecución hasta recibir una respuesta.
+
+El objetivo de la práctica es comprender el comportamiento secuencial (bloqueante) de las operaciones de red y practicar el consumo de una API REST con Python.
+
+ Estructura del Proyecto
+📁 Tarea1/
+├── server.py
+├── client_to_complete.py
+└── README.md
+
+ Requisitos Previos
+
+Antes de ejecutar los scripts, asegúrate de tener instalado:
+
+Python 3.8 o superior
+
+Librerías necesarias:
+
+pip install flask requests
+
+ Ejecución del Proyecto
+
+Iniciar el servidor Flask:
+
+python server.py
+
+
+Verás el mensaje:
+
+ Iniciando servidor síncrono en http://localhost:5000
+
+
+Esto indica que la API está disponible en el puerto 5000.
+
+Ejecutar el cliente:
+
+En otra terminal:
+
+python client_to_complete.py
+
+
+El cliente realizará llamadas al servidor de forma secuencial, mostrando el comportamiento bloqueante típico de operaciones síncronas.
+
+ Funcionamiento del Servidor (server.py)
+ Estructura de Datos
+
+El servidor mantiene una base de datos simulada en memoria:
+
+users_db = {
+    1: {"id": 1, "name": "Alice", "email": "alice@example.com"},
+    2: {"id": 2, "name": "Bob", "email": "bob@example.com"},
+    3: {"id": 3, "name": "Charlie", "email": "charlie@example.com"}
+}
+
+ Endpoints
+Método	Ruta	Descripción
+GET	/api/users/<int:user_id>	Obtiene un usuario por ID
+POST	/api/users	Crea un nuevo usuario
+ Simulación de Procesamiento
+
+Cada solicitud bloquea el hilo principal por un tiempo determinado:
+
+GET /api/users/<id> → time.sleep(2) segundos
+
+POST /api/users → time.sleep(1) segundo
+
+Esto emula un proceso real (como acceso a base de datos o cómputo intensivo).
+
+ Formato de Respuestas
+
+Éxito:
+
+{
+  "status": "success",
+  "data": {
+    "id": 1,
+    "name": "Alice",
+    "email": "alice@example.com"
+  }
+}
+
+
+Error:
+
+{
+  "status": "error",
+  "message": "User not found"
+}
+
+ Funcionamiento del Cliente (client_to_complete.py)
+
+El cliente se conecta al servidor utilizando el módulo requests.
+
+ Demostración Síncrona
+
+La función demo_secuencial() obtiene tres usuarios de forma bloqueante:
+
+user1 = get_user_sync(1)
+user2 = get_user_sync(2)
+user3 = get_user_sync(3)
+
+
+Cada llamada espera 2 segundos, resultando en un tiempo total de ≈6 segundos.
+
+ Tareas a Completar
+ TAREA 1 — Crear un nuevo usuario
+
+Debes usar la función create_user_sync() para enviar un POST con los datos del usuario:
+
+new_user = create_user_sync("David", "david@example.com")
+
+ TAREA 2 — Obtener y mostrar el usuario creado
+
+Una vez creado, se puede recuperar su información usando su id:
+
+if new_user:
+    created_id = new_user["data"]["id"]
+    get_user_sync(created_id)
+
+ Resultados Esperados
+
+Al ejecutar correctamente el cliente, deberías observar en la consola:
+
+ Cliente: Solicitando usuario 1...
+ Cliente: Recibido usuario 1 - Alice (Tiempo: 2.01s)
+ Cliente: Solicitando usuario 2...
+ Cliente: Recibido usuario 2 - Bob (Tiempo: 2.00s)
+ Cliente: Solicitando usuario 3...
+ Cliente: Recibido usuario 3 - Charlie (Tiempo: 2.00s)
+
+ Tiempo total secuencial: ~6.00 segundos
+
+ Cliente: Creando usuario David...
+ Cliente: Usuario creado - David (Tiempo: 1.00s)
+ Cliente: Solicitando usuario 4...
+ Cliente: Recibido usuario 4 - David (Tiempo: 2.00s)
